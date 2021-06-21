@@ -8,7 +8,7 @@ Pure Vanilla JavaScript webapp with searching filtering functionality with respo
   - [The challenge](#the-challenge)
   - [Screenshot](#screenshot)
   - [Links](#links)
-- [Author](#author)
+
 
 ## Overview
 
@@ -26,13 +26,8 @@ Users should be able to:
 
 ### Links
 
-- Live Demo URL: [Click here to view](https://sushil333.github.io/frontend-mentor/game-arena/)
+- Live Demo URL: [Click here to view](https://shadowbeast7.github.io/Game-Arena/)
 
 ### Useful resources
 
 - [W3School](https://www.w3schools.com/) - It has almost all the information about HTML, CSS, & JS.
-
-## Author
-
-- Website - [sbrocks.me](https://www.your-site.com)
-- Frontend Mentor - [@Sushil333](https://www.frontendmentor.io/profile/Sushil333)
