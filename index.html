@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0em;
+            background: #f7f7f7;
+        }
+
+        .root {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media only screen and (max-width: 425px) {
+            .root {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar sticky-top navbar-dark bg-dark mb-3 py-3">
+        <div class="container">
+            <input type="text" class="form-control" id="search-box" placeholder="Search game">
+            <br>
+            <h5 class="h5 text-white mt-3 mx-2">Filter by platforms</h5>
+            <div class="filter-btns mt-2">
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="root container">
+
+    </div>
+
+    <script>
+        const root = document.querySelector('.root')
+        const search = document.querySelector('#search-box')
+        const filterButtonsContainer = document.querySelector('.filter-btns')
+        // const url = 'https://s3-ap-southeast-1.amazonaws.com/he-public-data/gamesarena274f2bf.json'
+        const url = './gamesarena.json'
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            root.innerHTML = 'Loading...'
+            const data = await getData(url);
+
+            if (data) displayList(data.slice(1))
+
+            const platforms = data.slice(1).reduce((values, item) => {
+                if (!values.includes(item.platform)) {
+                    values.push(item.platform)
+                }
+                return values;
+            }, ['All'])
+
+            platfformBtns = platforms.map(p => `<div class="btn btn-sm btn-light m-2 filter-btn" data-id="${p}">${p}</div>`)
+
+            filterButtonsContainer.innerHTML = platfformBtns.join("");
+            const filterButtons = document.querySelectorAll('.filter-btn')
+
+            search.addEventListener('keyup', (e) => {
+                let term = e.target.value.toLocaleLowerCase();
+                let searchedData = data.slice(1).filter(d => d.title.toLocaleLowerCase().includes(term))
+                displayList(searchedData);
+            })
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    var elems = document.querySelector(".active");
+                    if (elems !== null) {
+                        elems.classList.remove("active");
+                    }
+                    e.target.classList.add("active");
+
+                    let term = e.target.dataset.id;
+                    let filterData = data.slice(1).filter(d => d.platform.includes(term))
+                    if (term === 'All')
+                        displayList(data.slice(1));
+                    else
+                        displayList(filterData)
+                })
+            })
+        });
+
+
+        async function getData(url) {
+            try {
+                const res = await fetch(url);
+                const data = res.json();
+                return data;
+            } catch (err) {
+                console.error(err.message)
+            }
+        }
+
+        function displayList(items) {
+            let arena_list = items.map(d => {
+                return `
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">${d.title}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">${d.genre} - ${d.platform}</h6>
+                                <span class="badge badge-pill badge-dark">${d.score} &#9733;</span>
+                                ${d.editors_choice === 'Y' ? '<span class="badge badge-pill badge-success">Editor\'s Choice</span>' : ''}
+                            </div>
+                        </div>
+                    `
+            })
+            arena_list = arena_list.join("")
+            root.innerHTML = arena_list;
+        }
+    </script>
+
+</body>
+
+</html>
